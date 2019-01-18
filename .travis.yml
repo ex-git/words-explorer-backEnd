@@ -1,0 +1,11 @@
+language: node_js
+node_js: node
+services:
+- mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: Y4yPmxWqUK+9NJfQvBZMF1dNqJEaJH/USzhJoY1IZ/SqBtj1D+0VZCJoR4uSHEvVXrxcKk1E2z/eBVO6XnROlBO5f34/Dy/fUU/feagLPEi+rGkJl14WG9vngedmQM10OXfXSCS8fH2wTze9tfiocscY7g+717k7yVFslswcRsJFozkb3i8jSzT2VvK9YaSL2ICSHLVUJNZewFQDmAxDHqhI7oNFeNxw6k8cDp8CTl9ya+Jq07t1iru3NREdXQj2b+0MDoQdVXNKBNZI+5DrnnLCtci+GCMrDhRXn3SnPnJBgVKwd8RZ46qA+ZfKJ6la5U21gmCP06Ch0VP9AvVZSeCaozYvbSG4Kda92b4/C7p+gOLvEpHoqi0DEze5egjEFkAgj1pa+hXb4AH8GKT5e/bn2kCi73A2DqylGS4+YDGTgszngB2uZSUdEbY2kEXKOI26mAfieIitgepcZOwSklCHFj1vYBzYqdDORcGgl0NvCjY6XlcNRiwJ3LjPLkh4YEjxJLisy3BU/HD9WTUUXOjTepYvQlwDvRriNPnNEKWHRUZoD5TQJu4Do5e/IR3/zAP06j91830L2yqKk2vbGDDZNvYts023a3RiCdkCAm1EKdjIqWQHNlI0d5WPiVM96czo0mZU0zQd/yjS6F3OiawuJGTdnoBAfzm8mNAJWRA=
+  app: words-explorer-api
+  on:
+    repo: ex-git/words-explorer-backEnd
