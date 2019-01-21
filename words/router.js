@@ -21,7 +21,7 @@ const structureResponse = (data, id) =>{
         return {result : 0}
     }
     else if(data.length >0 && typeof(data[0]) === "object") {
-        let word = data[0].meta.id
+        let word = data[0].meta.id.toLowerCase()
         return {[word]: data.filter(subData=>subData.meta.id.toLowerCase()===word).map(speech=>{
             let definitionAndExamples = speech.def[0].sseq.map(eachDef=>{
                 return {def: eachDef[0][1].dt[0][1],
