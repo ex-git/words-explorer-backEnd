@@ -7,6 +7,16 @@ const {CLIENT_ORIGIN, PORT, DATABASE_URL} = require('./config');
 const {wordsRouter} = require('./words')
 const {gamesRouter} = require('./games')
 const {usersRouter} = require('./users')
+const {authRouter, localStrategy, jwtStrategy } = require('./auth');
+
+//passport and strategies
+const passport = require('passport');
+passport.use(localStrategy);
+passport.use(jwtStrategy);
+
+//parser JWT from cookie
+const cookieParser = require('cookie-parser')
+app.use(cookieParser())
 
 //mongoose
 const mongoose = require('mongoose');
@@ -30,6 +40,7 @@ app.use(
 app.use('/api/words', wordsRouter);
 app.use('/api/games', gamesRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/auth/', authRouter);
 
 //return 404 for non-existing pages
 app.use('*', (req, res) => {
