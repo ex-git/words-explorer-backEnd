@@ -22,21 +22,20 @@ const localAuth = passport.authenticate('local', {session: false});
 
 // User provides a username and password to login
 authRouter.post('/login', localAuth, (req, res) => {
-    const validUser = {address: req.user.address,
-        companyName: req.user.companyName}
+    const validUser = {userName: req.user.userName}
     const authToken = createAuthToken(req.user.userName);
-    res.status(200).cookie('authToken', authToken, {maxAge: 600000, httpOnly: true, sameSite: "lax"}).json({validUser: validUser})
+    res.status(200).cookie('authToken', authToken, {maxAge: 3600000, httpOnly: true, sameSite: "lax"}).json({validUser: validUser})
 })
 
 const jwtAuth = passport.authenticate('jwt', {session: false});
 
 // User exchanges a valid JWT for a new one with a later expiration
 authRouter.get('/refresh', jwtAuth, (req, res) => {
-    const validUser = {address: req.user.address,
-        companyName: req.user.companyName}
+    console.info(req.user)
+    const validUser = {userName: req.user.userName}
     const authToken = createAuthToken(req.user.userName);
-    //send back cookie with 10 mins life with JWT
-    res.status(200).cookie('authToken', authToken, {maxAge: 600000, httpOnly: true, sameSite: "lax"}).json({validUser: validUser})
+    //send back cookie with 60 mins life with JWT
+    res.status(200).cookie('authToken', authToken, {maxAge: 3600000, httpOnly: true, sameSite: "lax"}).json({validUser: validUser})
 });
 
 // seng invalid JWT for logout

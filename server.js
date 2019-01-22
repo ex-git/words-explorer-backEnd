@@ -40,7 +40,7 @@ app.use(
 app.use('/api/words', wordsRouter);
 app.use('/api/games', gamesRouter);
 app.use('/api/users', usersRouter);
-app.use('/api/auth/', authRouter);
+app.use('/api/auth', authRouter);
 
 //return 404 for non-existing pages
 app.use('*', (req, res) => {

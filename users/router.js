@@ -6,8 +6,8 @@ const usersRouter = express.Router();
 
 const {User} = require('../models')
 
-// // const passport = require('passport')
-// const jwtAuth = passport.authenticate('jwt', {session: false});
+const passport = require('passport')
+const jwtAuth = passport.authenticate('jwt', {session: false});
 
 //body parser
 // usersRouter.use(express.json())
@@ -40,15 +40,35 @@ usersRouter.post("/", (req, res)=>{
             message: 'Missing field'
         })
     }
-    let newUser = {
-        userName:req.body.userName,
-        password: req.body.password
-    }
-    User.create(newUser)
+    User.findOne({userName: req.body.userName})
     .then(user=>{
-        res.status(201).json({
-            status: 201,
-            message: `User ${user.userName} created`})
+        if(user) {
+            return res.status(422).json({
+                status: 422,
+                reason: 'UserExist',
+                message: `User Name ${req.body.userName} Already Been Registered`
+            })
+        }
+        User.hashPassword(req.body.password)
+        .then(hashedPassword=>{
+            let newUser = {
+                userName:req.body.userName,
+                password: hashedPassword
+            }
+            User.create(newUser)
+            .then(user=>{
+                res.status(201).json({
+                    status: 201,
+                    message: `User ${user.userName} created`})
+            })
+            .catch(err=>{
+                res.status(500).json({
+                    status: 500,
+                    reason: 'ServerError',
+                    message: 'Server error'
+                })
+            })
+        })
     })
     .catch(err=>{
         res.status(500).json({
@@ -58,7 +78,7 @@ usersRouter.post("/", (req, res)=>{
         })
     })
 })
-usersRouter.put("/", (req, res)=>{
+usersRouter.put("/", jwtAuth, (req, res)=>{
     const requredFields = ['userName', 'password']
     const missingField = requredFields.find(field=> !(field in req.body))
     if (missingField) {
@@ -84,7 +104,7 @@ usersRouter.put("/", (req, res)=>{
         })
     })
 })
-usersRouter.delete("/", (req, res)=>{
+usersRouter.delete("/", jwtAuth, (req, res)=>{
     User.findOneAndRemove({userName: req.body.userName})
     .then(user=>{
         res.status(200).end()

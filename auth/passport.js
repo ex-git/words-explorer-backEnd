@@ -12,7 +12,7 @@ const localStrategy = new LocalStrategy({
     //added usernameField and passwordField since localStrategy only look for username and password in lowercase in default
     usernameField: 'userName',
     passwordField: 'password'
-  }, (username, password, callback)=>{
+    }, (username, password, callback)=>{
     let validUser;
     User.findOne({"userName": username})
     .then(user=>{

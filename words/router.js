@@ -16,20 +16,32 @@ const axios = require('axios');
 
 // words.get("/", jwtAuth, (req, res)=>{
 
-const structureResponse = (data, id) =>{
+const structureResponse = data =>{
     if (data.length === 0) {
-        return {result : 0}
+        return {message: 'Nothing found with this word',
+        result : 0}
     }
     else if(data.length >0 && typeof(data[0]) === "object") {
-        let word = data[0].meta.id.toLowerCase()
-        return {[word]: data.filter(subData=>subData.meta.id.toLowerCase()===word).map(speech=>{
-            let definitionAndExamples = speech.def[0].sseq.map(eachDef=>{
-                return {def: eachDef[0][1].dt[0][1],
-                example: eachDef[0][1].dt[1][1][0].t.replace(/{(.*?)}/g, '')}
+        return {word: data[0].meta.id.split(':')[0],
+            results: data.filter(subData=>subData.meta.id.split(':')[0].toLowerCase()===data[0].meta.id.split(':')[0].toLowerCase()).map(speech=>{
+            let definitionAndExamples = speech.def[0].sseq.filter(eachDefinition=>{
+                if (eachDefinition[0][1].dt.length>1 && eachDefinition[0][1].dt[0][1].replace(/{(.*?)}/g, '').trim() !== '') {
+                    if (/^[a-zA-Z]/.test(eachDefinition[0][1].dt[0][1].replace(/{(.*?)}/g, '').trim())) {
+                        return true
+                    }
+                    return false
+                }
+                return false
+            }).map(eachDef=>{
+                if (eachDef[0][1].dt.length>1 && eachDef[0][1].dt[0][1].replace(/{(.*?)}/g, '') !== ' ') {
+                    return {def: eachDef[0][1].dt[0][1].replace(/{(.*?)}/g, '').trim(),
+                            example: eachDef[0][1].dt[1][1][0].t.replace(/{(.*?)}/g, '')
+                    }
+                }
             })
             return {
                 partsOfSpeech: speech.fl,
-                definition: definitionAndExamples
+                definitions: definitionAndExamples
             }
         })}
     }
@@ -38,10 +50,10 @@ const structureResponse = (data, id) =>{
     }
 }
 wordsRouter.get("/:id", (req, res)=>{
-    const query = `${ENDPOINT}/${req.params.id}?key=${API_KEY}`
+    const query = `${ENDPOINT}${req.params.id}?key=${API_KEY}`
     axios(query)
     .then(response=>{
-        return res.status(200).send(structureResponse(response.data, req.params.id))
+        return res.status(200).send(structureResponse(response.data))
     })
     .catch(
         ()=>
