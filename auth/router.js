@@ -22,7 +22,7 @@ const localAuth = passport.authenticate('local', {session: false});
 
 // User provides a username and password to login
 authRouter.post('/login', localAuth, (req, res) => {
-    const validUser = {userName: req.user.userName}
+    const validUser = req.user
     const authToken = createAuthToken(req.user.userName);
     res.status(200).cookie('authToken', authToken, {maxAge: 3600000, httpOnly: true, sameSite: "lax"}).json({validUser: validUser})
 })
@@ -31,15 +31,14 @@ const jwtAuth = passport.authenticate('jwt', {session: false});
 
 // User exchanges a valid JWT for a new one with a later expiration
 authRouter.get('/refresh', jwtAuth, (req, res) => {
-    console.info(req.user)
-    const validUser = {userName: req.user.userName}
+    const validUser = req.user
     const authToken = createAuthToken(req.user.userName);
     //send back cookie with 60 mins life with JWT
     res.status(200).cookie('authToken', authToken, {maxAge: 3600000, httpOnly: true, sameSite: "lax"}).json({validUser: validUser})
 });
 
 // seng invalid JWT for logout
-authRouter.get('/logOut', jwtAuth, (req, res) => {
+authRouter.get('/logout', jwtAuth, (req, res) => {
     //set cookie to expire immediately
     res.status(200).cookie('authToken', '', {maxAge: 0, httpOnly: true, sameSite: "lax"}).end()
 })

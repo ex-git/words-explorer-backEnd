@@ -23,19 +23,19 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 // using morgan for server log
-const morgan = require("morgan")
-app.use(morgan('common'))
+// const morgan = require("morgan")
+// app.use(morgan('common'))
 
 //same as body parser
 app.use(express.json());
 
-//cors
+cors
 app.use(
     cors({
-        origin: CLIENT_ORIGIN
+        origin: CLIENT_ORIGIN,
+        credentials: true
     })
 );
-
 
 app.use('/api/words', wordsRouter);
 app.use('/api/games', gamesRouter);

@@ -7,7 +7,8 @@ const mongoose = require('mongoose');
 
 const UserSchema = mongoose.Schema({
     userName: {type: String, required:true},
-    password: {type: String, required:true}
+    password: {type: String, required:true},
+    scores: {type: String, default: 0},
 })
 
 UserSchema.statics.hashPassword = function(password) {
@@ -19,31 +20,29 @@ UserSchema.methods.validatePassword = function(password) {
 }
 
 const questionSchema = mongoose.Schema({
-    word: {type: String,  required:true},
-    question: {type: Array, required:true},
-    correctAnswer: {type: String, required:true}
+    correctAnswer: {type: String,  required:true},
+    question: {type: String, required:true}
 })
+
 
 const gameSchema = mongoose.Schema({
-    creator: {type: mongoose.Schema.Types.ObjectId, ref: "User"},
+    creator: {type: String, required: true},
     gameStatus: {type: String, default: 'open'},
-    gameId: {type: String, required:true, default: Date.now().toString()},
+    gameId: {type: String, required:true, default: new Date().getTime().toString()},
     questions: [questionSchema],
-    currentQuestion:{type: Number, default: 0},
-    timeOutUser:{type: Number, default: 0},
-    answersReceived: {},
-    players: {},
-})
+    answersReceived: {type: 'mixed', default: {}},
+    players: {type: Array, default: []},
+}, { minimize: false })
 
-gameSchema.pre("find", function(next) {
-    this.populate("creator");
-    next()
-})
+// gameSchema.pre("find", function(next) {
+//     this.populate("creator");
+//     next()
+// })
 
-gameSchema.pre("findOne", function(next) {
-    this.populate("creator");
-    next()
-})
+// gameSchema.pre("findOne", function(next) {
+//     this.populate("creator");
+//     next()
+// })
 
 
 const Game = mongoose.model("Game", gameSchema);
