@@ -24,7 +24,9 @@ const localAuth = passport.authenticate('local', {session: false});
 authRouter.post('/login', localAuth, (req, res) => {
     const validUser = req.user
     const authToken = createAuthToken(req.user.userName);
-    res.status(200).cookie('authToken', authToken, {domain: ".herokuapp.com", maxAge: 3600000, httpOnly: true}).json({validUser: validUser})
+    res.status(200).json({
+        validUser: validUser,
+        authToken: authToken})
 })
 
 const jwtAuth = passport.authenticate('jwt', {session: false});
@@ -34,13 +36,15 @@ authRouter.get('/refresh', jwtAuth, (req, res) => {
     const validUser = req.user
     const authToken = createAuthToken(req.user.userName);
     //send back cookie with 60 mins life with JWT
-    res.status(200).cookie('authToken', authToken, {domain: ".herokuapp.com", maxAge: 3600000, httpOnly: true}).json({validUser: validUser})
+    res.status(200).json({
+        validUser: validUser,
+        authToken: authToken})
 });
 
 // seng invalid JWT for logout
 authRouter.get('/logout', jwtAuth, (req, res) => {
     //set cookie to expire immediately
-    res.status(200).cookie('authToken', '', {domain: ".herokuapp.com", maxAge: 0, httpOnly: true}).end()
+    res.status(200).cookie('authToken', '', {maxAge: 0, httpOnly: true}).end()
 })
 
 

@@ -145,8 +145,6 @@ usersRouter.put("/", jwtAuth, (req, res)=>{
             })
         })
     }
-    
-    
 })
 usersRouter.delete("/:userId", jwtAuth, (req, res)=>{
     Game.deleteMany({creator: req.params.userId}, function () {
