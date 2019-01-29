@@ -24,7 +24,7 @@ const localAuth = passport.authenticate('local', {session: false});
 authRouter.post('/login', localAuth, (req, res) => {
     const validUser = req.user
     const authToken = createAuthToken(req.user.userName);
-    res.status(200).cookie('authToken', authToken, {maxAge: 3600000, httpOnly: true, sameSite: "lax"}).json({validUser: validUser})
+    res.status(200).cookie('authToken', authToken, {maxAge: 3600000, secure, httpOnly: true, sameSite: "lax"}).json({validUser: validUser})
 })
 
 const jwtAuth = passport.authenticate('jwt', {session: false});
@@ -34,7 +34,7 @@ authRouter.get('/refresh', jwtAuth, (req, res) => {
     const validUser = req.user
     const authToken = createAuthToken(req.user.userName);
     //send back cookie with 60 mins life with JWT
-    res.status(200).cookie('authToken', authToken, {maxAge: 3600000, httpOnly: true, sameSite: "lax"}).json({validUser: validUser})
+    res.status(200).cookie('authToken', authToken, {maxAge: 3600000, secure, httpOnly: true, sameSite: "lax"}).json({validUser: validUser})
 });
 
 // seng invalid JWT for logout
