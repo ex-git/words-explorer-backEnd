@@ -75,12 +75,6 @@ describe("Testing front end with GET", function(){
             .then(function(res){
                 expect(res).to.have.status(200)
                 expect(res).to.have.cookie('authToken');
-                return agent
-                .delete(`/api/users/${res.body.validUser._id}`)
-                .then(function(res){
-                    expect(res).to.have.status(200)
-                    agent.close()
-                })
             })
         })
     })

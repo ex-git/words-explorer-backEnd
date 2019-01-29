@@ -24,7 +24,7 @@ const localAuth = passport.authenticate('local', {session: false});
 authRouter.post('/login', localAuth, (req, res) => {
     const validUser = req.user
     const authToken = createAuthToken(req.user.userName);
-    res.status(200).cookie('authToken', authToken, {domain: 'words-explorer.herokuapp.com', maxAge: 3600000, secure:true, httpOnly: true}).json({validUser: validUser})
+    res.status(200).cookie('authToken', authToken, {domain: "words-explorer.herokuapp.com", maxAge: 3600000, httpOnly: true}).json({validUser: validUser})
 })
 
 const jwtAuth = passport.authenticate('jwt', {session: false});
@@ -34,13 +34,13 @@ authRouter.get('/refresh', jwtAuth, (req, res) => {
     const validUser = req.user
     const authToken = createAuthToken(req.user.userName);
     //send back cookie with 60 mins life with JWT
-    res.status(200).cookie('authToken', authToken, {domain: 'words-explorer.herokuapp.com', maxAge: 3600000, secure:true, httpOnly: true}).json({validUser: validUser})
+    res.status(200).cookie('authToken', authToken, {domain: "words-explorer.herokuapp.com", maxAge: 3600000, httpOnly: true}).json({validUser: validUser})
 });
 
 // seng invalid JWT for logout
 authRouter.get('/logout', jwtAuth, (req, res) => {
     //set cookie to expire immediately
-    res.status(200).cookie('authToken', '', {domain: 'words-explorer.herokuapp.com', maxAge: 0, secure:true, httpOnly: true, sameSite: "lax"}).end()
+    res.status(200).cookie('authToken', '', {domain: "words-explorer.herokuapp.com", maxAge: 0, httpOnly: true}).end()
 })
 
 
