@@ -82,7 +82,6 @@ gamesRouter.post("/", jwtAuth, (req, res)=>{
         res.status(201).json(game)
     })
     .catch(err=>{
-        console.info(err)
         res.status(500).json({
             status: 500,
             reason: 'ServerError',
@@ -114,13 +113,11 @@ gamesRouter.put("/:id", jwtAuth, (req, res)=>{
                 if(game) {
                     //prevent double join
                     if(game.players.includes(req.user.userName) || game.gameStatus !== 'open') {
-                        console.info('already loged in', req.user.userName)
                         return res.status(200).json(game)
                     }
                     else {
                         Game.findOneAndUpdate({gameId: req.params.id}, {$set: {players: [...game.players, req.user.userName]}}, {new: true})
                         .then(newGame=> {
-                            console.info('returning joined game')
                             return res.status(200).json(newGame)
                         })
                         .catch(()=>{
@@ -198,7 +195,6 @@ gamesRouter.put("/:id", jwtAuth, (req, res)=>{
             //check if all players offline and reset game to open
             if(game.gameStatus !== 'open') {
                 let resetGame = setTimeout(function(){
-                    console.info('here i am')
                     clearInterval(timeCheck)
                     return Game.findOneAndUpdate({gameId: req.params.id}, {$set: {gameStatus: 'open', players: [], answersReceived: {}}})
                     .then(()=>null)
@@ -208,7 +204,6 @@ gamesRouter.put("/:id", jwtAuth, (req, res)=>{
                     Game.findOne({gameId: req.params.id})
                     .then(game2=>{
                         if (game2.gameStatus !== game.gameStatus) {
-                            console.info('ok, new status received, leaving')
                             clearInterval(timeCheck)
                             clearTimeout(resetGame)
                         }
@@ -231,7 +226,6 @@ gamesRouter.put("/:id", jwtAuth, (req, res)=>{
 gamesRouter.delete("/:id", jwtAuth, (req, res)=>{
     Game.findOneAndDelete(req.params.id)
     .then(game=>{
-        console.info(game)
         res.status(200).end()
     })
     .catch(()=>{
