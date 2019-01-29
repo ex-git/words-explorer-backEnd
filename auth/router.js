@@ -39,12 +39,6 @@ authRouter.get('/refresh', jwtAuth, (req, res) => {
     res.status(200).json({
         validUser: validUser,
         authToken: authToken})
-});
-
-// seng invalid JWT for logout
-authRouter.get('/logout', jwtAuth, (req, res) => {
-    //set cookie to expire immediately
-    res.status(200).cookie('authToken', '', {maxAge: 0, httpOnly: true}).end()
 })
 
 
