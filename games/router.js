@@ -145,8 +145,9 @@ gamesRouter.put("/:id", jwtAuth, (req, res)=>{
             Game.findOne({gameId: req.params.id})
             .then(game=>{
                 if(game) {
+                    //if is the last player leaving the game, reset game status and empty answer received
                     if(game.players.filter(player=> player !== req.user.userName).length===0) {
-                        Game.findOneAndUpdate({gameId: req.params.id}, {$set: {gameStatus: 'open', players: game.players.filter(player=> player !== req.user.userName)}})
+                        Game.findOneAndUpdate({gameId: req.params.id}, {$set: {gameStatus: 'open', answersReceived: {}, players: []}})
                         .then(newGame=> {
                             return res.status(200).end
                         })
