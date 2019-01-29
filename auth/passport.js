@@ -3,7 +3,7 @@
 //same as === const { Strategy: LocalStrategy } = require('passport-local');
 const LocalStrategy = require("passport-local").Strategy;
 
-const { Strategy: JWTStrategy} = require('passport-jwt');
+const { Strategy: JWTStrategy, ExtractJwt} = require('passport-jwt');
 
 const {JWT_SECRET} = require('../config')
 const {User} = require("../models");
@@ -44,19 +44,19 @@ const localStrategy = new LocalStrategy({
 
 
 //Extra JWT from cookie
-const cookieExtractor = function(req) {
-    var token = null;
-    if (req && req.cookies) 
-        {
-            token = req.cookies.authToken
-        }
-    return token;
-};
+// const cookieExtractor = function(req) {
+//     var token = null;
+//     if (req && req.cookies) 
+//         {
+//             token = req.cookies.authToken
+//         }
+//     return token;
+// };
 
 const jwtStrategy = new JWTStrategy({
     secretOrKey: JWT_SECRET,
     // Look for the authToken from cookie
-    jwtFromRequest: cookieExtractor,
+    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('Bearer'),
     // HS256 tokens - same as the one we issue
     algorithms: ['HS256']
     },

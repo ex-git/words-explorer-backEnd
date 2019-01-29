@@ -14,10 +14,6 @@ const passport = require('passport');
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 
-//parser JWT from cookie
-const cookieParser = require('cookie-parser')
-app.use(cookieParser())
-
 //mongoose
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
