@@ -11,11 +11,6 @@ const axios = require('axios');
 const passport = require('passport')
 const jwtAuth = passport.authenticate('jwt', {session: false});
 
-//body parser
-// invoiceRouter.use(express.json())
-
-// words.get("/", jwtAuth, (req, res)=>{
-
 const structureResponse = data =>{
     if (data.length === 0) {
         return {message: 'Nothing found with this word',

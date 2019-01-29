@@ -8,12 +8,11 @@ const chai = require('chai');
 
  describe('API', function() {
 
-   it('should 500 on GET requests due to not auth', function() {
+   it('should 401 on GET requests due to not auth', function() {
      return chai.request(app)
-       .get('/api/words/fooooo')
+       .get('/api/words/food')
        .then(function(res) {
-         res.should.have.status(500);
-         res.should.be.json;
+         res.should.have.status(401)
        });
    });
  });
