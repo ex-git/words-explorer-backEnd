@@ -1,6 +1,6 @@
 //passport
 
-//  same as === const { Strategy: LocalStrategy } = require('passport-local');
+//same as === const { Strategy: LocalStrategy } = require('passport-local');
 const LocalStrategy = require("passport-local").Strategy;
 
 const { Strategy: JWTStrategy} = require('passport-jwt');

@@ -69,26 +69,29 @@ usersRouter.post("/", (req, res)=>{
                 message: `User Name ${req.body.userName} Already Been Registered`
             })
         }
-        User.hashPassword(req.body.password)
-        .then(hashedPassword=>{
-            let newUser = {
-                userName:req.body.userName,
-                password: hashedPassword
-            }
-            User.create(newUser)
-            .then(user=>{
-                res.status(201).json({
-                    status: 201,
-                    message: `User ${user.userName} created`})
-            })
-            .catch(err=>{
-                res.status(500).json({
-                    status: 500,
-                    reason: 'ServerError',
-                    message: 'Server error'
+        else {
+            User.hashPassword(req.body.password)
+            .then(hashedPassword=>{
+                let newUser = {
+                    userName:req.body.userName,
+                    password: hashedPassword
+                }
+                User.create(newUser)
+                .then(user=>{
+                    res.status(201).json({
+                        status: 201,
+                        message: `User ${user.userName} created`})
+                })
+                .catch(err=>{
+                    res.status(500).json({
+                        status: 500,
+                        reason: 'ServerError',
+                        message: 'Server error'
+                    })
                 })
             })
-        })
+        }
+        
     })
     .catch(err=>{
         res.status(500).json({
@@ -99,8 +102,8 @@ usersRouter.post("/", (req, res)=>{
     })
 })
 usersRouter.put("/", jwtAuth, (req, res)=>{
-    const acceptFields = ['userName', 'password', 'scores'].filter(field=> field in req.body)
-    const missingField = acceptFields.length<2
+    const acceptFields = ['password', 'scores'].filter(field=> field in req.body)
+    const missingField = acceptFields.length<1
     if (missingField) {
         return res.status(422).json({
             status: 422,
@@ -112,10 +115,9 @@ usersRouter.put("/", jwtAuth, (req, res)=>{
         User.hashPassword(req.body.password)
         .then(hashedPassword=>{
             let newUser = {
-                userName:req.body.userName,
                 password: hashedPassword
             }
-            User.findOneAndUpdate({userName: req.body.userName}, {$set: newUser})
+            User.findOneAndUpdate({userName: req.user.userName}, {$set: newUser})
             .then(user=>{
                 res.status(200).end()
             })
@@ -136,7 +138,7 @@ usersRouter.put("/", jwtAuth, (req, res)=>{
         })
     }
     else {
-        User.findOneAndUpdate({userName: req.body.userName}, {$set: req.body})
+        User.findOneAndUpdate({userName: req.user.userName}, {$set: req.body})
         .then(user=>{
             res.status(200).end()
         })

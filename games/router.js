@@ -9,13 +9,8 @@ const jwtAuth = passport.authenticate('jwt', {session: false});
 
 const {Game} = require('../models')
 
-// // const passport = require('passport')
-// const jwtAuth = passport.authenticate('jwt', {session: false});
-
 //body parser
 gamesRouter.use(express.json())
-
-// gamesRouter.get("/", jwtAuth, (req, res)=>{
 
 gamesRouter.get("/", (req, res)=>{
     Game.find({gameStatus: 'open'}, {gameId:1})
@@ -45,7 +40,6 @@ gamesRouter.get("/user/:user", jwtAuth, (req, res)=>{
 })
 
 gamesRouter.get("/:id", jwtAuth, (req, res)=>{
-    console.info('doign get')
     Game.findOne({gameId: req.params.id})
     .then(game=>{
         if(game) {
@@ -117,28 +111,33 @@ gamesRouter.put("/:id", jwtAuth, (req, res)=>{
         if(req.body.join === 'yes'){
             Game.findOne({gameId: req.params.id})
             .then(game=>{
-                //prevent double join
-                if(game.players.includes(req.user.userName) || game.gameStatus !== 'open') {
-                    console.info('already loged in', req.user.userName)
-                    return res.status(200).json(game)
+                if(game) {
+                    //prevent double join
+                    if(game.players.includes(req.user.userName) || game.gameStatus !== 'open') {
+                        console.info('already loged in', req.user.userName)
+                        return res.status(200).json(game)
+                    }
+                    else {
+                        Game.findOneAndUpdate({gameId: req.params.id}, {$set: {players: [...game.players, req.user.userName]}}, {new: true})
+                        .then(newGame=> {
+                            console.info('returning joined game')
+                            return res.status(200).json(newGame)
+                        })
+                        .catch(()=>{
+                            res.status(500).json({
+                                status: 500,
+                                reason: 'ServerErr',
+                                message: 'Unable to add to game'
+                            })
+                        })
+                    }
                 }
                 else {
-                    Game.findOneAndUpdate({gameId: req.params.id}, {$set: {players: [...game.players, req.user.userName]}}, {new: true})
-                    .then(newGame=> {
-                        console.info('returning joined game')
-                        return res.status(200).json(newGame)
-                    })
-                    .catch(()=>{
-                        res.status(501).json({
-                            status: 500,
-                            reason: 'ServerErr',
-                            message: 'Unable to add to game'
-                        })
-                    })
+                    return new Promise.reject()
                 }
             })
             .catch(()=>{
-                res.status(502).json({
+                res.status(500).json({
                     status: 500,
                     reason: 'ServerErr',
                     message: 'Unable to join'
@@ -148,36 +147,45 @@ gamesRouter.put("/:id", jwtAuth, (req, res)=>{
         else if (req.body.join === 'no' && req.params.id) {
             Game.findOne({gameId: req.params.id})
             .then(game=>{
-                if(game.players.filter(player=> player !== req.user.userName).length===0) {
-                    Game.findOneAndUpdate({gameId: req.params.id}, {$set: {gameStatus: 'open', players: game.players.filter(player=> player !== req.user.userName)}})
-                    .then(newGame=> {
-                        return res.status(200).end
-                    })
-                    .catch(()=>{
-                        res.status(503).json({
-                            status: 500,
-                            reason: 'ServerErr',
-                            message: 'Unable to exit'
+                if(game) {
+                    if(game.players.filter(player=> player !== req.user.userName).length===0) {
+                        Game.findOneAndUpdate({gameId: req.params.id}, {$set: {gameStatus: 'open', players: game.players.filter(player=> player !== req.user.userName)}})
+                        .then(newGame=> {
+                            return res.status(200).end
                         })
-                    })
+                        .catch(()=>{
+                            res.status(503).json({
+                                status: 500,
+                                reason: 'ServerErr',
+                                message: 'Unable to exit'
+                            })
+                        })
+                    }
+                    else {
+                        Game.findOneAndUpdate({gameId: req.params.id}, {$set: {players: game.players.filter(player=> player !== req.user.userName)}})
+                        .then(newGame=> {
+                            return res.status(200).end
+                        })
+                        .catch(()=>{
+                            res.status(500).json({
+                                status: 500,
+                                reason: 'ServerErr',
+                                message: 'Unable to exit'
+                            })
+                        })
+                    }
                 }
                 else {
-                    Game.findOneAndUpdate({gameId: req.params.id}, {$set: {players: game.players.filter(player=> player !== req.user.userName)}})
-                    .then(newGame=> {
-                        return res.status(200).end
-                    })
-                    .catch(()=>{
-                        res.status(503).json({
-                            status: 500,
-                            reason: 'ServerErr',
-                            message: 'Unable to exit'
-                        })
+                    res.status(500).json({
+                        status: 500,
+                        reason: 'ServerErr',
+                        message: 'Unable to exit'
                     })
                 }
             })
         }
         else {
-            res.status(503).json({
+            res.status(500).json({
                 status: 500,
                 reason: 'ServerErr',
                 message: 'Unable to exit'
@@ -206,12 +214,10 @@ gamesRouter.put("/:id", jwtAuth, (req, res)=>{
                         }
                         return
                     })
-                }, 1000)
+                }, 2000)
             }
             return res.status(200).end()
-        }
-            
-        )
+        })
         .catch(()=>{
             res.status(500).json({
                 status: 500,
