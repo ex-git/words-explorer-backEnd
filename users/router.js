@@ -9,11 +9,6 @@ const {Game, User} = require('../models')
 const passport = require('passport')
 const jwtAuth = passport.authenticate('jwt', {session: false});
 
-//body parser
-// usersRouter.use(express.json())
-
-//usersRouter.get("/", jwtAuth, (req, res)=>{
-
 usersRouter.get("/", (req, res)=>{
     User.find({}, {password:0})
     .then(users=>{
