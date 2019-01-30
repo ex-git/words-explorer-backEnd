@@ -25,7 +25,7 @@ mongoose.Promise = global.Promise;
 //same as body parser
 app.use(express.json());
 
-cors
+//cors
 app.use(
     cors({
         origin: CLIENT_ORIGIN,
