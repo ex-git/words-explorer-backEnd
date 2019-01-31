@@ -16,7 +16,7 @@
 
 ## ENDPOINTS
 
-https://words-explorer-api.herokuapp.com/api/auth
-https://words-explorer-api.herokuapp.com/api/users
-https://words-explorer-api.herokuapp.com/api/words
-https://words-explorer-api.herokuapp.com/api/games
+* api/auth
+* api/users
+* api/words
+* api/games
