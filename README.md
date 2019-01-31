@@ -2,7 +2,7 @@
 
 ## Summary
   This is the backend for Words Explorer.
-  https://words-explorer.herokuapp.com/
+  https://github.com/ex-git/words-explorer-frontEnd
 
 ## Key technology used
 
